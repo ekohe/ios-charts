@@ -15,6 +15,12 @@ import CoreGraphics
 @objc(ChartAxisRendererBase)
 open class AxisRendererBase: Renderer
 {
+    
+    public var timeIntervals : Bool?
+    public var timeIntervalsForSeconds : Bool?
+    public var decimalIntervals : Bool?
+
+    
     /// base axis this axis renderer works with
     open var axis: AxisBase?
     
@@ -92,6 +98,8 @@ open class AxisRendererBase: Renderer
         computeAxisValues(min: min, max: max)
     }
     
+    
+    
     /// Sets up the axis values. Computes the desired number of labels between the two given extremes.
     open func computeAxisValues(min: Double, max: Double)
     {
@@ -132,6 +140,149 @@ open class AxisRendererBase: Renderer
         
         var n = axis.centerAxisLabelsEnabled ? 1 : 0
         
+        // Custom intervals overriding
+        // Two main modes are available here
+        //   - time intervals: 1,5,15,30,60,120,180,240,360,720
+        //   - 'standard intervals': 0.5,1,5,10,20,25,50,100
+        //
+        // Also possible to deactivate the 0.5 interval
+        
+        if timeIntervals ?? false {
+            if (interval<1) {
+                interval = 1
+            }
+            
+            if (interval>1) && (interval<5) {
+                interval = 5
+            }
+            
+            if (interval > 5) && (interval < 15) {
+                interval = 15
+            }
+            
+            if (interval > 15) && (interval < 30) {
+                interval = 30
+            }
+            
+            if (interval > 30) && (interval < 60) {
+                interval = 60
+            }
+            
+            if (interval > 60) && (interval < 120) {
+                interval = 120
+            }
+            
+            if (interval > 120) && (interval < 180) {
+                interval = 180
+            }
+            
+            if (interval > 180) && (interval < 240) {
+                interval = 240
+            }
+            
+            if (interval > 240) && (interval < 360) {
+                interval = 360
+            }
+            
+            if (interval > 360) && (interval < 720) {
+                interval = 720
+            }
+        } else {
+            if timeIntervalsForSeconds ?? false {
+                if (interval < 1) {
+                    interval = 1
+                }
+                
+                if (interval > 1) && (interval < 10) {
+                    interval = 10
+                }
+                
+                if (interval > 10) && (interval < 30) {
+                    interval = 30
+                }
+                
+                if (interval > 30) && (interval<60) {
+                    interval = 60
+                }
+                
+                if (interval>60) && (interval<300) {
+                    interval = 300
+                }
+                
+                if (interval > 300) && (interval < 900) {
+                    interval = 900
+                }
+                
+                if (interval > 900) && (interval < 1800) {
+                    interval = 1800
+                }
+                
+                if (interval > 1800) && (interval < 3600) {
+                    interval = 3600
+                }
+                
+                if (interval > 3600) && (interval < 7200) {
+                    interval = 7200
+                }
+                
+                if (interval > 7200) && (interval < 10800) {
+                    interval = 10800
+                }
+                
+                if (interval > 10800) && (interval < 14400) {
+                    interval = 14400
+                }
+                
+                if (interval > 14400) && (interval < 21600) {
+                    interval = 21600
+                }
+                
+                if (interval > 21600) && (interval < 43200) {
+                    interval = 43200
+                }
+            } else {
+                
+                // Are decimals intervals enabled?
+                if (decimalIntervals ?? false) {
+                    if (interval<0.5) {
+                        interval = 0.5
+                    }
+                } else {
+                    if (interval < 1) {
+                        interval = 1
+                    }
+                }
+                
+                if (interval>0.5) && (interval<1) {
+                    interval = 1
+                }
+                
+                if (interval > 1) && (interval<5) {
+                    interval = 5
+                }
+                
+                if (interval > 5) && (interval < 10) {
+                    interval = 10
+                }
+                
+                if (interval > 10) && (interval < 20) {
+                    interval = 20
+                }
+                
+                if (interval > 20) && (interval < 25) {
+                    interval = 25
+                }
+                
+                if (interval > 25) && (interval < 50) {
+                    interval = 50
+                }
+                
+                if (interval > 50) && (interval < 100) {
+                    interval = 100
+                }
+            }
+        }
+        
         // force label count
         if axis.isForceLabelsEnabled
         {
@@ -154,7 +305,7 @@ open class AxisRendererBase: Renderer
         else
         {
             // no forced count
-        
+            
             var first = interval == 0.0 ? 0.0 : ceil(yMin / interval) * interval
             
             if axis.centerAxisLabelsEnabled
